@@ -172,7 +172,7 @@ public class TestPGJSONConverter {
                 + "\"arrayint\": [-123], " //
                 + "\"list\": [{\"a\": true}]" //
                 + "}";
-        State state = converter.jsonToState(json);
+        Object state = converter.jsonToValue(json);
         State expected = new State();
         expected.put("bar", "bar");
         expected.put("esc", "\"\\/\b\f\n\r\t\u00e9\u1234\ufedc");
@@ -222,7 +222,7 @@ public class TestPGJSONConverter {
         Map<String, Type> types = new HashMap<>();
         types.put("foo", LongType.INSTANCE);
         PGJSONConverter converter = new PGJSONConverter(types);
-        State state = converter.jsonToState("{\"foo\":" + value + "}");
+        Object state = converter.jsonToValue("{\"foo\":" + value + "}");
         State expected = new State();
         expected.put("foo", Long.valueOf(value));
         assertEquals(expected, state);
@@ -253,7 +253,7 @@ public class TestPGJSONConverter {
         Map<String, Type> types = new HashMap<>();
         types.put("foo", DoubleType.INSTANCE);
         PGJSONConverter converter = new PGJSONConverter(types);
-        State state = converter.jsonToState("{\"foo\":" + value + "}");
+        Object state = converter.jsonToValue("{\"foo\":" + value + "}");
         State expected = new State();
         expected.put("foo", Double.valueOf(value));
         assertEquals(expected, state);
@@ -261,8 +261,8 @@ public class TestPGJSONConverter {
 
     @Test
     public void testJsonParsingErrors() {
-        assertError(" ", "Expected '{' instead of ' ' at pos: 1");
-        assertError("#", "Expected '{' instead of '#' at pos: 1");
+        assertError(" ", "Unexpected ' ' at pos: 1");
+        assertError("#", "Unexpected '#' at pos: 1");
         assertError("{", "Expected '\"' instead of EOF at pos: 1");
         assertError("{,", "Expected '\"' instead of ',' at pos: 2");
         assertError("{\u0000}", "Expected '\"' instead of EOF at pos: 2"); // \u0000 is EOF
@@ -360,7 +360,7 @@ public class TestPGJSONConverter {
         types.put("foo", dbl ? DoubleType.INSTANCE : LongType.INSTANCE);
         PGJSONConverter converter = new PGJSONConverter(types);
         try {
-            converter.jsonToState(badJson);
+            converter.jsonToValue(badJson);
             fail("Parsing should fail for: " + badJson);
         } catch (NuxeoException e) {
             assertEquals(message, e.getMessage());

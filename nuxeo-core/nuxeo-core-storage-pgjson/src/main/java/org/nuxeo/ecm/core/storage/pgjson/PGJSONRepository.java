@@ -72,8 +72,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.resource.spi.ConnectionManager;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.model.Repository;
@@ -85,6 +83,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * PostgreSQL+JSON implementation of a {@link Repository}.
@@ -93,15 +92,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PGJSONRepository extends DBSRepositoryBase {
 
-    private static final Logger log = LogManager.getLogger(PGJSONRepository.class);
-
     protected static final int BATCH_SIZE = 100;
 
     public static final String TABLE_NAME = "documents";
 
     protected static final String COL_ID = "id";
-
-    protected static final String COL_JSON = "doc";
 
     protected static final String COL_PARENT_ID = "parentid";
 
@@ -170,6 +165,10 @@ public class PGJSONRepository extends DBSRepositoryBase {
     protected static final String COL_FULLTEXT_BINARY = "fulltextbinary";
 
     protected static final String COL_FULLTEXT_JOBID = "fulltextjobid";
+
+    protected static final String COL_JSON = "doc";
+
+    protected static final String PSEUDO_KEY_JSON = "__json__"; // internal
 
     protected final Map<String, Type> allTypes;
 
@@ -329,15 +328,13 @@ public class PGJSONRepository extends DBSRepositoryBase {
         registerColumn(KEY_FULLTEXT_JOBID, COL_FULLTEXT_JOBID, TYPE_STRING);
         registerColumn(KEY_READ_ACL, COL_READ_ACL, TYPE_STRING_ARRAY);
         registerColumn(KEY_ACP, COL_ACP, TYPE_JSON);
-        jsonDocColumn = registerColumn(null, COL_JSON, TYPE_JSON);
+        jsonDocColumn = registerColumn(PSEUDO_KEY_JSON, COL_JSON, TYPE_JSON);
     }
 
     protected PGColumn registerColumn(String key, String name, PGType type) {
         PGColumn col = new PGColumn(key, name, type);
         allColumns.add(col);
-        if (key != null) {
-            keyToColumn.put(key, col);
-        }
+        keyToColumn.put(key, col);
         return col;
     }
 
@@ -351,14 +348,6 @@ public class PGJSONRepository extends DBSRepositoryBase {
 
     protected List<PGColumn> getAllColumns() {
         return allColumns;
-    }
-
-    protected PGColumn getIdColumn() {
-        return idColumn;
-    }
-
-    protected PGColumn getJsonDocColumn() {
-        return jsonDocColumn;
     }
 
     protected Map<String, PGColumn> getKeyToColumn() {
@@ -378,23 +367,17 @@ public class PGJSONRepository extends DBSRepositoryBase {
 
     @Override
     public Lock getLock(String id) {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+        return TransactionHelper.runWithoutTransaction(() -> super.getLock(id));
     }
 
     @Override
     public Lock setLock(String id, Lock lock) {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+        return TransactionHelper.runWithoutTransaction(() -> super.setLock(id, lock));
     }
 
     @Override
     public Lock removeLock(String id, String owner) {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+        return TransactionHelper.runWithoutTransaction(() -> super.removeLock(id, owner));
     }
 
 }
