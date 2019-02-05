@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.platform.picture.operation.RecomputePictureViews;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -68,6 +70,9 @@ public class TestRecomputePictureViews {
 
     @Inject
     protected AutomationService automationService;
+
+    @Inject
+    protected BulkService bulkService;
 
     @Test
     @SuppressWarnings("unchecked")
@@ -100,6 +105,8 @@ public class TestRecomputePictureViews {
         try (OperationContext ctx = new OperationContext(session)) {
             automationService.run(ctx, RecomputePictureViews.ID, parameters);
         }
+
+        bulkService.await(Duration.ofSeconds(60));
 
         // wait for picture views generation
         txFeature.nextTransaction();

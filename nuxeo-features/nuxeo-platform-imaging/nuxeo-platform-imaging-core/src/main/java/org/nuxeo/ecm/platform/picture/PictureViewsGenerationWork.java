@@ -36,13 +36,16 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
+import org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Work generating the different picture views for a Picture.
  *
  * @since 5.7
+ * @deprecated 11.1 use {@link RecomputeViewsAction} instead
  */
+@Deprecated
 public class PictureViewsGenerationWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;

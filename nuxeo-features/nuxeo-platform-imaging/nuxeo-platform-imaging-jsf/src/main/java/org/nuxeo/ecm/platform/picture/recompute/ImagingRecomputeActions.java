@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.picture.recompute;
 
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
+import static org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction.ACTION_NAME;
 
 import java.io.Serializable;
 
@@ -34,6 +35,8 @@ import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
@@ -95,8 +98,8 @@ public class ImagingRecomputeActions implements Serializable {
         }
 
         if (!StringUtils.isBlank(nxqlQuery)) {
-            ImagingRecomputeWork work = new ImagingRecomputeWork(documentManager.getRepositoryName(), nxqlQuery);
-            workManager.schedule(work);
+            BulkService service = Framework.getService(BulkService.class);
+            service.submit(new BulkCommand.Builder(ACTION_NAME, nxqlQuery).build());
 
             facesMessages.addFromResourceBundle(StatusMessage.Severity.INFO, "label.imaging.recompute.work.launched");
         }
