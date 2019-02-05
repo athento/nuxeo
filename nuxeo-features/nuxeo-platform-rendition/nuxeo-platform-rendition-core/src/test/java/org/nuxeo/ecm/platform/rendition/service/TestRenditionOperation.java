@@ -57,6 +57,7 @@ import org.nuxeo.ecm.platform.rendition.operation.GetRendition;
 import org.nuxeo.ecm.platform.rendition.operation.PublishRendition;
 import org.nuxeo.ecm.platform.rendition.operation.UnpublishAll;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -82,6 +83,7 @@ public class TestRenditionOperation {
     protected RenditionService renditionService;
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
     public void shouldGetPDFRendition() throws OperationException {
         DocumentModel file = createDummyFile();
 
@@ -111,6 +113,7 @@ public class TestRenditionOperation {
      * @since 10.3
      */
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
     public void shouldPublishPDFRendition() throws OperationException {
         DocumentModel file = createDummyFile();
         DocumentModel section = session.createDocumentModel("/", "section", "Section");
@@ -140,6 +143,7 @@ public class TestRenditionOperation {
      * @since 10.3
      */
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
     public void shouldPublishDefaultRendition() throws OperationException {
         DocumentModel file = createDummyFile();
         DocumentModel section = session.createDocumentModel("/", "section", "Section");
@@ -171,6 +175,7 @@ public class TestRenditionOperation {
      * @since 10.3
      */
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
     public void shouldPublishMutlipleDocument() throws OperationException {
         DocumentModel file1 = createDummyFile();
         DocumentModel file2 = createDummyFile();
@@ -193,6 +198,7 @@ public class TestRenditionOperation {
      * @since 10.3
      */
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
     public void shouldUnpublishAll() throws OperationException {
         DocumentModel file = createDummyFile();
         DocumentModel section = session.createDocumentModel("/", "section", "Section");
